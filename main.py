@@ -15,7 +15,7 @@ for assignment in collection.find():
     print(assignment)
 
 app = Flask(__name__)
-@app.route("/hwLogger", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def hwLogger():
     error = ""
     errorHTML = ""
@@ -26,7 +26,10 @@ def hwLogger():
             # Reload assignments from MongoDB
             new_assignments = list(collection.find().sort("_id"))
 
-            assignment_id = new_assignments[delete_index]["_id"]
+            if 0 <= delete_index < len(new_assignments):
+                assignment_id = new_assignments[delete_index]["_id"]
+                collection.delete_one({"_id": assignment_id})
+            #assignment_id = new_assignments[delete_index]["_id"]
 
             collection.delete_one({"_id": assignment_id})
 
@@ -147,7 +150,7 @@ def hwLogger():
     <body>
     
     
-        <h1> HW Logger </h1>
+        <h1> Homework Logger </h1>
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script>
@@ -156,7 +159,7 @@ def hwLogger():
             $(document).on("click", ".delete", function(delt) {{
                 delt.preventDefault(); // prevent form submit
                 let index = $(this).val();//gets value
-                $.post("/hwLogger", {{delete: index}}, function() {{//]send post request to delete assignment
+                $.post("/", {{delete: index}}, function() {{//]send post request to delete assignment
                     location.reload();//reloads page to current status
                 }});
             }});
